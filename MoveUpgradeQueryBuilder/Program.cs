@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Xml.Linq;
+using System.Xml;
 
 namespace MoveUpgradeQueryBuilder
 {
@@ -13,16 +14,42 @@ namespace MoveUpgradeQueryBuilder
         static void Main(string[] args)
         {
             List<ContainerObject> lstcontObject = new List<ContainerObject>();
+            List<string> lstString = new List<string> { "8662900","8658006","8660419","8663612"};
+            //foreach (string item in lstString)
+            //{
+            //   // System.Net.WebRequest webRequest = System.Net.WebRequest.Create("https://gateway.dgsapi.com/tracing/xml.ashx?c=PIPE.BusinessProcesses.ConversationLog.Dashboard&file=2016-06-08_15%5C160608155420DGPR10%5CATT-SubmitOrder-IORProvide-d2f6b459-6cd5-45a5-a899-b3c8799d98bc%5CRequest.txt");
+            //    System.Net.WebClient wb = new System.Net.WebClient();
+            //    string xml = wb.DownloadString("https://gateway.dgsapi.com/tracing/xml.ashx?c=PIPE.BusinessProcesses.ConversationLog.Dashboard&file=2016-06-08_15%5C160608155420DGPR10%5CATT-SubmitOrder-IORProvide-d2f6b459-6cd5-45a5-a899-b3c8799d98bc%5CRequest.txt");
+            //    //using (var response = webRequest.GetResponse())
+            //    //using (var content = response.GetResponseStream())
+            //    //using (var reader = new StreamReader(content))
+            //    //{
+            //    //    var strContent = reader.ReadToEnd();
+            //    //}
+            //}
+
 
             foreach (string file in Directory.EnumerateFiles(@"C:\Users\mhatiq\Desktop\MoveInformation", "*.xml"))
             {
-                // string contents = File.ReadAllText(file);
+                 string content = File.ReadAllText(file);
+                //System.Net.WebClient wb = new System.Net.WebClient();
+                //string url = "https://gateway.dgsapi.com/tracing/xml.ashx?c=PIPE.BusinessProcesses.ConversationLog.Dashboard&file=2016-06-08_15%5C160608155420DGPR10%5CATT-SubmitOrder-IORProvide-d2f6b459-6cd5-45a5-a899-b3c8799d98bc%5CRequest.txt";
+                //string xmlString = wb.DownloadString(url);
+               var  xml = XDocument.Load(file);
                 ContainerObject contObject = new ContainerObject();
-                var xml = XDocument.Load(file);
+                //XDocument xml;
+                //using (StringReader s = new StringReader(xmlString))
+                //{
+                //    xml = XDocument.Load(s);
+                //}
                 contObject.LeadId = xml.Root.Descendants("Leadid").FirstOrDefault().Value;
+              //  contObject.LeadId = item;
                 contObject.MoveCity = xml.Root.Descendants("City").FirstOrDefault().Value;
                 contObject.MovingAddress = xml.Root.Descendants("AddressLine1").FirstOrDefault().Value;
+                if(xml.Root.Descendants("FiberSchedulingInfo").FirstOrDefault()!=null)
                 contObject.MovingDate = xml.Root.Descendants("FiberSchedulingInfo").FirstOrDefault().Attribute("actualDisconnectDate").Value;
+                else
+                    contObject.MovingDate = xml.Root.Descendants("ActualSchedule").FirstOrDefault().Attribute("actualDisconnectDate").Value;
                 contObject.MovingState = xml.Root.Descendants("State").FirstOrDefault().Value;
                 contObject.MovingZip = xml.Root.Descendants("ZipCode").FirstOrDefault().Value;
                 if (xml.Root.Descendants("ApartmentUnit").FirstOrDefault() != null)
